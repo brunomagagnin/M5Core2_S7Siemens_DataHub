@@ -12,3 +12,4 @@ IPAddress Subnet(255, 255, 255, 0);
  ***************************************************/
 char ssid[] = "NONE";
 char pass[] = "yourpassword";
+
