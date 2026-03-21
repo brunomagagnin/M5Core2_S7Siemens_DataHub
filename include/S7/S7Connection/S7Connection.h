@@ -12,6 +12,7 @@ static S7Client client;
 public:
 bool S7Connect();
 
+
 };
 
 

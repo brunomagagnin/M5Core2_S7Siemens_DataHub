@@ -1,28 +1,18 @@
 #ifndef DBADRESS_H
 #define DBADRESS_H
 #include "Config.h"
+#include "S7/S7Types/S7Type.h"
 
-/*
-struct plcBoolVar {
-    String nome;      // Nome variável
-    int dbNumber;     // Numero da DB
-    int byteOffset;   // Endereço na DB
-    int bitOffset;    // Endereço do bit
-    bool valorAtual;  // Valor inicial
+S7Type* S7DataBool[MAX_NUMBER_BOOL];
+S7Type* S7DataAnalog[MAX_NUMBER_ANALOG];
 
-struct plcAnalogVar {
-    String nome;      // Nome variável
-    int dbNumber;     // Numero da DB
-    int offset;       // Endereço na DB
-    float valorAtual; // Valor inicial
-};
-*/
 
 /***************************************************
  *         DECLARAÇÃO DAS VARIÁVEIS
  ***************************************************/
 
-//VARIÁVEIS BOOLEANAS
+//VARIÁVEIS BOOLEANAS  
+//Nome da variável, número da DB, Endereço na DB, Endereço do bit, Valor inicial
 plcBoolVar listOfBool[MAX_NUMBER_BOOL] = {
     {"Motor_1_ligado", 2, 0, 0, false},
     {"Motor_2_ligado", 2, 0, 1, false},
@@ -35,6 +25,7 @@ plcBoolVar listOfBool[MAX_NUMBER_BOOL] = {
 };
 
 //VARIAVEIS ANALÓGICAS
+// Nome da variável, número da DB, Endereço na DB e Valor inicial
 plcAnalogVar listOfAnalogs[MAX_NUMBER_ANALOG] = {
     {"Sensor_1", 1, 0, 0.0},
     {"Sensor_2", 1, 2, 0.0},
