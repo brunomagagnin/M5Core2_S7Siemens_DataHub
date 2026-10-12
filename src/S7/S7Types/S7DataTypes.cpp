@@ -1,56 +1,59 @@
-#include "S7\S7Types\S7DataTypes.h"
-#include "DBAdress.h"
+#include "S7/S7Types/S7DataTypes.h"
+
+#include <cstring>
+
+namespace {
+bool hasBytes(const uint8_t* buffer, size_t length, size_t byteOffset, size_t count) {
+    return buffer != nullptr && byteOffset <= length && count <= length - byteOffset;
+}
+}  // namespace
 
 
+/* ###################################################################
+   ###################################################################
+                    MÉTODOS PARA AQUISIÇÃO DE DADOS 
+   ###################################################################
+   ################################################################### */
 
-//BOOL METHODS
-S7Bool::S7Bool(void *Buffer, int ByteIndex, byte BitIndex){
-    this->Buf = Buffer;
-    this->ByteIndex = ByteIndex;
-    this->BitIndex = BitIndex;
+   //Padrão dos métodos, valida os argumentos que foram passados e depois executa
+  
+   namespace S7DataTypes {
+
+bool readBool(const uint8_t* buffer, size_t length, size_t byteOffset, uint8_t bitOffset, bool& value) {
+    if (bitOffset > 7 || !hasBytes(buffer, length, byteOffset, 1)) return false;
+    value = (buffer[byteOffset] & (uint8_t(1) << bitOffset)) != 0;
+    return true;
 }
 
-S7Type::S7Type(){
+bool readWord(const uint8_t* buffer, size_t length, size_t byteOffset, uint16_t& value) {
+    if (!hasBytes(buffer, length, byteOffset, 2)) return false;
+    value = (uint16_t(buffer[byteOffset]) << 8) | buffer[byteOffset + 1];
+    return true;
 }
 
-void S7Bool::S7Execute() const{
-  value = helper.BitAt(this->Buf, this->BitIndex, this->ByteIndex);
+bool readInt16(const uint8_t* buffer, size_t length, size_t byteOffset, int16_t& value) {
+    uint16_t raw = 0;
+    if (!readWord(buffer, length, byteOffset, raw)) return false;
+    const int32_t signedValue = raw <= 0x7FFF ? int32_t(raw) : int32_t(raw) - 65536;
+    value = static_cast<int16_t>(signedValue);
+    return true;
 }
 
-
-//WORD METHODS
-S7Word::S7Word(void *Buffer, int Index){
-    this->Buf = Buffer;
-    this->index = index;
+bool readDWord(const uint8_t* buffer, size_t length, size_t byteOffset, uint32_t& value) {
+    if (!hasBytes(buffer, length, byteOffset, 4)) return false;
+    value = (uint32_t(buffer[byteOffset]) << 24) |
+            (uint32_t(buffer[byteOffset + 1]) << 16) |
+            (uint32_t(buffer[byteOffset + 2]) << 8) |
+            uint32_t(buffer[byteOffset + 3]);
+    return true;
 }
 
-void S7Word::S7Execute() const{
-   this->value = helper.DWordAt(this->Buf, this->index);
+bool readReal32(const uint8_t* buffer, size_t length, size_t byteOffset, float& value) {
+    static_assert(sizeof(float) == sizeof(uint32_t), "REAL requer float IEEE-754 de 32 bits");
+    uint32_t bits = 0;
+    if (!readDWord(buffer, length, byteOffset, bits)) return false;
+    std::memcpy(&value, &bits, sizeof(value));
+    return true;
 }
 
-
-//DWORD METHODS
-S7DWord::S7DWord(void *Buffer, int index){
-    this->Buf = Buffer;
-    this->index = index;
-}
-
-void S7DWord::S7Execute() const{
-    this->value = helper.DWordAt(this->index);
-}
-
-
-/**********************************************
-***************FACTORY TYPES*******************
-************************************************/
-void S7Type::S7FactoryTypes(plcBoolVar var[MAX_NUMBER_BOOL]){
-    for(int i = 0; i < MAX_NUMBER_BOOL; i++){
-        S7DataBool[i] = new S7Bool(buffer, var[i].byteOffset, var[i].bitOffset);
-    }
-}
-
-void S7Type::S7FactoryTypes(plcAnalogVar var[MAX_NUMBER_ANALOG]){
-    for(int i = 0; i < MAX_NUMBER_ANALOG; i++){
-        S7DataAnalog[i] = new S7DWord(buffer, var[i].offset);
-    }
-}
+}  // namespace S7DataTypes

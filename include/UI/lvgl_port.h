@@ -1,6 +1,3 @@
-#ifndef LVGL_PORT_H
-#define LVGL_PORT_H
+#pragma once
 
 void lvgl_port_init();
-
-#endif

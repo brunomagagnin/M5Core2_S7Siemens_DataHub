@@ -1,56 +1,36 @@
+
 #pragma once
 
 #include <Arduino.h>
 
-#define SCREENS 3
-
-/***************************************************
- *                     ADDRESS 
- ***************************************************/
+// Endereços de rede
 extern IPAddress PLC;
 extern IPAddress Gateway;
 extern IPAddress Subnet;
 
-/***************************************************
- *                      WIFI 
- ***************************************************/
+// Wi-Fi
 extern char ssid[];
 extern char pass[];
 
-/***************************************************
- *                    PLC DATA 
- ***************************************************/
-#define RACK 0
-#define SLOT 2
+// Configurações gerais do projeto
+namespace AppConfig {
 
-/***************************************************
- *         LIMITE DE VARIÁVEIS MONITORADAS 
- ***************************************************/
-#define MAX_NUMBER_BOOL 10
-#define MAX_NUMBER_ANALOG 5 
+    // Configuração de comunicação Siemens
+    constexpr uint16_t RACK = 0;
+    constexpr uint16_t SLOT = 2;
 
-/***************************************************
- *         ESTRUTURAS UTILIZADAS PARA DADOS
- ***************************************************/
-// Struct para variáveis booleanas
-struct plcBoolVar {
-    String nome;      // Nome variável
-    int dbNumber;     // Numero da DB
-    int byteOffset;   // Endereço na DB
-    int bitOffset;    // Endereço do bit
-    bool valorAtual;  // Valor
-};
+    // Períodos das tasks e comunicação
+    constexpr uint32_t UI_PERIOD_MS = 5;
+    constexpr uint32_t PLC_POLL_MS = 500;
 
-// Struct para variáveis analógicas (Inteiros e Reais)
-struct plcAnalogVar {
-    String nome;      // Nome variável
-    int dbNumber;     // Numero da DB
-    int offset;       // Endereço na DB
-    float valorAtual; // Valor
-};
+    // Reconexão
+    constexpr uint32_t WIFI_RETRY_MS = 10000;
+    constexpr uint32_t PLC_RETRY_MS = 3000;
 
-// Declaração dos arrays
-extern plcBoolVar listaBool[MAX_NUMBER_BOOL];
-extern plcAnalogVar listaAnalog[MAX_NUMBER_ANALOG];
+    // Tempo máximo sem leitura válida
+    constexpr uint32_t PLC_STALE_MS = 5000;
 
+    // Tamanho máximo de leitura de DB
+    constexpr uint16_t MAX_DB_BYTES = 256;
 
+}

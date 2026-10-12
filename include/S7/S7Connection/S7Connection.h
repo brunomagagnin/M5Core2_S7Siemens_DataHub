@@ -1,19 +1,13 @@
-#ifndef S7CONNECTION_H
-#define S7CONNECTION_H
-#include "Settimino.h"
+#pragma once
+
 #include "Config.h"
+#include "Settimino.h"
 
 class S7Connection {
-private:
+public:
+    bool S7Connect();
+    void S7Disconnect();
 
 protected:
-static S7Client client;
-
-public:
-bool S7Connect();
-
-
+    static S7Client client;
 };
-
-
-#endif

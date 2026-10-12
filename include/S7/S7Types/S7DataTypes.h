@@ -1,52 +1,35 @@
-#ifndef S7DATATYPES_H
-#define S7DATATYPES_H
-#include "S7Type.h"
+#pragma once
 
-/**************************************************** 
-                  GET BOOL VARIABLE
-*****************************************************/
-class S7Bool : public S7Type{
+#include <cstddef>
+#include <cstdint>
 
-private:
-mutable bool value = false;
-void *Buf;
-int ByteIndex;
-byte BitIndex;
+/*   Referencia para readBool
+ * buffer     : Ponteiro para o buffer de dados.
+ * length     : Tamanho total do buffer em bytes.
+ * byteOffset : Posição do byte dentro do buffer.
+ * bitOffset  : Posição do bit dentro do byte (0 a 7). Somente para tipo Bool
+ * value      : Referência que recebe o valor booleano lido.
+ */
 
-public:
-void S7Execute() const override;
-S7Bool(void *Buffer, int ByteIndex, byte BitIndex);
-};
+ /*   Referencia para os demais métodos
+ * buffer     : Ponteiro para o buffer de dados lidos do CLP.
+ * length     : Tamanho total do buffer em bytes.
+ * byteOffset : Posição inicial do REAL no buffer (4 bytes).
+ * value      : Referência que recebe o valor REAL convertido para float.
+ */
 
-/**************************************************** 
-            GET WORD(INTEGER) VARIABLE
-*****************************************************/
-class S7Word : public S7Type
-{
-private:
-    void *Buf;
-    int index;
-    mutable dword value;
+namespace S7DataTypes {
 
-public:
-    void S7Execute() const override;
-    S7Word(void *Buffer, int Index); 
-};
+bool readBool(const uint8_t* buffer, size_t length, size_t byteOffset, uint8_t bitOffset, bool& value);
 
-/**************************************************** 
-            GET DWORD(REAL) VARIABLE
-*****************************************************/
-class S7DWord : public S7Type
-{
-private:
-    void *Buf;
-    int index;
-    mutable dword value;
+bool readWord(const uint8_t* buffer, size_t length, size_t byteOffset, uint16_t& value);
 
-public:
-    void S7Execute() const override;
-    S7DWord(void *Buffer, int index);
-};
+bool readInt16(const uint8_t* buffer, size_t length, size_t byteOffset, int16_t& value);
 
-#endif
+bool readDWord(const uint8_t* buffer, size_t length, size_t byteOffset, uint32_t& value);
+
+bool readReal32(const uint8_t* buffer, size_t length, size_t byteOffset, float& value);
+
+}  // namespace S7DataTypes
+
 
